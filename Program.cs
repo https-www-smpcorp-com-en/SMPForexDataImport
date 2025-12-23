@@ -219,6 +219,18 @@ void SendEmail(string to, string subject, string htmlBody)
     var smtpUser = string.Empty;// "no-reply@smpcorp.com"; // or service account
     var smtpPass = string.Empty; //"YOUR_SMTP_PASSWORD";   // secure via env/user-secrets
 
+    //"DeployEnv": "Test",
+    var configuration = new ConfigurationBuilder()
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables()
+#if DEBUG
+    .AddUserSecrets(typeof(Program).Assembly, optional: true)
+#endif
+    .Build();
+
+    subject = subject + " - " + configuration.GetValue<string>("DeployEnv").ToString();
+
     using var message = new MailMessage(fromAddress, to)
     {
         Subject = subject,
@@ -248,8 +260,8 @@ bool SaveExchangeRate(string CXCRDC, string CXCRRD, string PXCRRD, string efDate
         sTime = sTime.Replace(":", "").Substring(10).Trim();
 
         string SQL = "INSERT INTO " + JDELibrary + ".F550015" + " ( PXCRCD,  PXEFT,   PXCRR,  PXAN8, PXCDEC, PXCRDC, PXCRRD,PXUSER,PXUPMJ, PXPID,PXJOBN,PXTDAY ) " +
-        "Values  ('" + baseCur + "', '" + efDate + "'," + PXCRRD + ",  0,  0, '" + CXCRDC.Trim() + "'," + CXCRRD + ",'WINJOBUSER','" + efDate + "','FOREXEXCH','FOREXAPI'," + sTime.ToString() + ") ";
-        SQL = SQL + ",  ('" + CXCRDC.Trim() + "', '" + efDate + "'," + CXCRRD + ",  0,  0, '" + baseCur + "'," + PXCRRD + ",'WINJOBUSER','" + efDate + "','FOREXEXCH','FOREXAPI'," + sTime.ToString() + ") ";
+        "Values  ('" + baseCur + "', '" + efDate + "'," + CXCRRD + ",  0,  0, '" + CXCRDC.Trim() + "'," + PXCRRD + ",'WINJOBUSER','" + efDate + "','FOREXEXCH','FOREXAPI'," + sTime.ToString() + ") ";
+        SQL = SQL + ",  ('" + CXCRDC.Trim() + "', '" + efDate + "'," + PXCRRD + ",  0,  0, '" + baseCur + "'," + CXCRRD + ",'WINJOBUSER','" + efDate + "','FOREXEXCH','FOREXAPI'," + sTime.ToString() + ") ";
 
         OleDbCommand myCommand = new OleDbCommand(SQL, SMPLEWConnection);
         myCommand.CommandType = CommandType.Text;

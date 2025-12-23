@@ -259,9 +259,10 @@ bool SaveExchangeRate(string CXCRDC, string CXCRRD, string PXCRRD, string efDate
         string sTime = string.Format("{0:d/M/yyyy HH:mm:ss}", DateTime.Now);
         sTime = sTime.Replace(":", "").Substring(10).Trim();
 
-        string SQL = "INSERT INTO " + JDELibrary + ".F550015" + " ( PXCRCD,  PXEFT,   PXCRR,  PXAN8, PXCDEC, PXCRDC, PXCRRD,PXUSER,PXUPMJ, PXPID,PXJOBN,PXTDAY ) " +
-        "Values  ('" + baseCur + "', '" + efDate + "'," + CXCRRD + ",  0,  0, '" + CXCRDC.Trim() + "'," + PXCRRD + ",'WINJOBUSER','" + efDate + "','FOREXEXCH','FOREXAPI'," + sTime.ToString() + ") ";
-        SQL = SQL + ",  ('" + CXCRDC.Trim() + "', '" + efDate + "'," + PXCRRD + ",  0,  0, '" + baseCur + "'," + CXCRRD + ",'WINJOBUSER','" + efDate + "','FOREXEXCH','FOREXAPI'," + sTime.ToString() + ") ";
+        string SQL = "INSERT INTO " + JDELibrary + ".F550015" 
+            + " ( PXCRCD,  PXEFT,   PXCRR,  PXAN8, PXCDEC, PXCRDC, PXCRRD,PXUSER,PXUPMJ, PXPID,PXJOBN,PXTDAY ) " +
+        "Values  ('" + CXCRDC + "', '" + efDate + "'," + PXCRRD + ",  0,  0, '" + baseCur + "','" + CXCRRD.Trim() + "','WINJOBUSER','" + efDate + "','FOREXEXCH','FOREXAPI'," + sTime.ToString() + ") ";
+        SQL = SQL + ",  ('" + baseCur + "', '" + efDate + "'," + CXCRRD + ",  0,  0, '" + CXCRDC + "','" + PXCRRD + "','WINJOBUSER','" + efDate + "','FOREXEXCH','FOREXAPI'," + sTime.ToString() + ") ";
 
         OleDbCommand myCommand = new OleDbCommand(SQL, SMPLEWConnection);
         myCommand.CommandType = CommandType.Text;

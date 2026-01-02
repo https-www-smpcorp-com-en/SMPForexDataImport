@@ -105,6 +105,8 @@ try
         efDate = ToJdeJulian(DateTime.Parse(efDate)).ToString();
 
         int jdeDate = ToJdeJulian(row.FetchedAtUtc);
+
+        //"CNY" => "CN1",
         bool exists = RecordExists(JDELibrary, "F550015", BASECUR, CXCRDC, jdeDate);
         if (!exists)
         {
@@ -114,12 +116,30 @@ try
             {
                 rowCount = rowCount + 1;
             }
-        }        
+
+            if (BASECUR == "CN1")
+            {
+                BASECUR = "CNY";
+                ret = SaveExchangeRate(CXCRDC, CXCRRD, PXCRRD, efDate, BASECUR);
+                if (ret)
+                {
+                    rowCount = rowCount + 1;
+                }
+
+            }
+            if (CXCRDC == "CN1")
+            {
+                CXCRDC = "CNY";
+                ret = SaveExchangeRate(CXCRDC, CXCRRD, PXCRRD, efDate, BASECUR);
+                if (ret)
+                {
+                    rowCount = rowCount + 1;
+                }
+            }
+        }       
     }
 
     // Console.WriteLine($"Inserted/Updated {rows.Count} rows.");
-
-    //Call JDE Procedure to process the exchange rates
     CallJdeProc();
 
     //Sent Success Email
@@ -179,6 +199,8 @@ string NormalizeCurrency(string? currency)
     {
         "CAD" => "CDN",
         "MXN" => "MXP",
+        "JPY" => "YEN",
+        "CNY" => "CN1",
         _ => cur
     };
 }
